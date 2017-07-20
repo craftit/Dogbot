@@ -1,0 +1,6 @@
+(fp_lib_table
+  (lib (name Local)(type KiCad)(uri "$(KIPRJMOD)/Local.pretty")(options "")(descr ""))
+  (lib (name QFP50P900X900X120-49N)(type Legacy)(uri ${KIPRJMOD}/QFP50P900X900X120-49N.mod)(options "")(descr ""))
+  (lib (name SON-8)(type Legacy)(uri ${KIPRJMOD}/SON-8.mod)(options "")(descr ""))
+  (lib (name SON127P532X615X110-8N)(type Legacy)(uri ${KIPRJMOD}/SON127P532X615X110-8N.mod)(options "")(descr ""))
+)

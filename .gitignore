@@ -1,0 +1,7 @@
+*.FCStd1
+*.fcstd1
+*.gcode
+.project
+.cproject
+
+

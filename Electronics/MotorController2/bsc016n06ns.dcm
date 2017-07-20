@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP BSC016N06NS
+D OptiMOS N-Channel Power MOSFET, Vds 60V, Rdson 1.4mOhm, Id 100A, Qg (typ) 71nC,  Footprint PG-TDSON-8
+K OptiMOS Power MOSFET N-MOS
+F http://www.infineon.com/dgdl/Infineon-BSC016N06NS-DS-v02_01-en.pdf?fileId=db3a3043353fdc160135532b353c483c
+$ENDCMP
+#
+#End Doc Library
