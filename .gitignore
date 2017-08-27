@@ -3,5 +3,6 @@
 *.gcode
 .project
 .cproject
+*.stl
 
 
