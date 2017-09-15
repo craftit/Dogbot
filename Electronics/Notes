@@ -1,0 +1,14 @@
+Test
+
+1- Fail start. Error Reg1 20 04  Reg2 00 02 
+2- Ok.
+3- Ok.
+4- Ok.
+5- Ok.
+6- Fail. Reg1 4    Reg4 4
+7- Ok
+8- Ok
+9 - Fail. Reg1 4   Reg4 2
+10 - Ok
+11 - Ok.
+12 - Ok
