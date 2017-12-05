@@ -1,0 +1,14 @@
+<launch>
+
+  <!-- By default, we are not in debug mode -->
+  <arg name="debug" default="true" />
+  
+  <!--  -->
+  
+  <node name="dogbot_driver" pkg="dogbot_driver" type="driver"  launch-prefix="xterm -e gdb --args" >
+    <param name="configFilename" value="/home/charles/src/active/BMC2-Firmware/Config/config.json" />
+    <param name="devfilename" value="local" />
+    <param name="sim" value="false" />
+  </node>
+  
+</launch>

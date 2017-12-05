@@ -1,0 +1,12 @@
+<launch>
+
+  <!-- By default, we are not in debug mode -->
+  <arg name="debug" default="false" />
+  
+  <node name="mantis_gripper" pkg="mantis_gripper" type="mantis_gripper_node" >
+  
+    <param name="devfilename" value="/dev/ttyUSB0" />
+    <param name="sim" value="true" />
+  </node>
+  
+</launch>
