@@ -57,10 +57,10 @@ public:
   DogBotHWInterface(ros::NodeHandle& nh, urdf::Model* urdf_model = NULL);
 
   /** \brief Read the state from the robot hardware. */
-  virtual void read(ros::Duration &elapsed_time);
+  virtual void read(ros::Duration &elapsed_time) override;
 
   /** \brief Write the command to the robot hardware. */
-  virtual void write(ros::Duration &elapsed_time);
+  virtual void write(ros::Duration &elapsed_time) override;
 
   /** \breif Enforce limits for all values before writing */
   virtual void enforceLimits(ros::Duration &period);

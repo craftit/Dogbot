@@ -52,6 +52,7 @@ DogBotHWInterface::DogBotHWInterface(ros::NodeHandle &nh, urdf::Model *urdf_mode
 
   m_dogBotAPI = std::make_shared<DogBotN::DogBotAPIC>(devFilename,logger,DogBotN::DogBotAPIC::DMM_ClientOnly);
   m_dogBotAPI->LoadConfig("/home/charles/src/active/BMC2-Firmware/Config/config.json");
+  m_dogBotAPI->Init();
 
   m_actuators.empty();
   for(auto &name : joint_names_) {
@@ -79,10 +80,11 @@ void DogBotHWInterface::read(ros::Duration &elapsed_time)
   DogBotN::ServoC::TimePointT theTime = DogBotN::ServoC::TimePointT::clock::now();
   for (std::size_t joint_id = 0; joint_id < num_joints_; ++joint_id) {
     std::shared_ptr<DogBotN::JointC> &jnt = m_actuators[joint_id];
-    if(!jnt)
+    if(!jnt) {
       continue;
+    }
     jnt->GetStateAt(theTime,joint_position_[joint_id],joint_velocity_[joint_id],joint_effort_[joint_id]);
-    ROS_INFO_NAMED("dogbot_hw_interface", "Jnt '%s' position %f ",joint_names_[joint_id].c_str(),joint_position_[joint_id]);
+    //ROS_INFO_NAMED("dogbot_hw_interface", "Jnt '%s' position %f ",joint_names_[joint_id].c_str(),joint_position_[joint_id]);
 
   }
 }
