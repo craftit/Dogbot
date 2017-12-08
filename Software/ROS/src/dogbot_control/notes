@@ -1,0 +1,4 @@
+
+To switch controllers:
+
+rosservice call /dogbot/controller_manager/load_controller "name: 'joint_position_controller'"

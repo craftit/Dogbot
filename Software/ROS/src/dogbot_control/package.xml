@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package>
+  <name>dogbot_control</name>
+  <version>0.0.1</version>
+  <description>Simple simulation interface and template for setting up a hardware interface for dogbot</description>
+
+  <maintainer email="craftit@gmail.com">Charles Galambos</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">https://github.com/davetcoleman/ros_control_boilerplate</url>
+  <url type="butracker">https://github.com/davetcoleman/ros_control_boilerplate/issues</url>
+  <url type="repository">https://github.com/davetcoleman/ros_control_boilerplate/</url>
+
+  <author email="craftit@gmail.com">C</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>ros_control_boilerplate</build_depend>
+  <build_depend>roscpp</build_depend>
+          
+  <run_depend>ros_control_boilerplate</run_depend>
+  <run_depend>roscpp</run_depend>
+
+  <export>
+  </export>
+</package>

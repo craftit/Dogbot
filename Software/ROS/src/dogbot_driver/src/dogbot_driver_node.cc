@@ -10,8 +10,9 @@
 #include <functional>
 #include <assert.h>
 #include <mutex>
+#include <urdf/model.h>
 #include "dogbot/DogBotAPI.hh"
-
+#include "dogbot_driver/ROSHardwareInterface.hh"
 
 /**
  * Driver node for dogbot
@@ -26,6 +27,7 @@ int main(int argc, char **argv)
 
   std::string configFilename = "";
   std::string devFilename = "local";
+  std::string urdfFilename = "dogbot.urdf";
 
   nPrivate.getParam("configFilename",configFilename);
   nPrivate.getParam("devFilename",devFilename);
@@ -38,9 +40,22 @@ int main(int argc, char **argv)
 
   std::shared_ptr<DogBotN::DogBotAPIC> dogBotAPI = std::make_shared<DogBotN::DogBotAPIC>(devFilename,logger,DogBotN::DogBotAPIC::DMM_ClientOnly);
 
-#if 1
   // Connect and start things going.
   dogBotAPI->Init(configFilename);
+
+#if 0
+  urdf::Model model;
+  if(!model.initFile(urdfFilename)) {
+    ROS_ERROR("Failed to parse urdf file.");
+    return -1;
+  }
+  ROS_INFO("Have URDF file.");
+#endif
+
+  DogBotN::ROSHardwareInterface rosHardwareInterface(n,dogBotAPI);
+  //DogBotN::ROSHardwareC rosHardware(dogBotAPI);
+
+#if 0
 
   std::vector<std::string> jointNames;
   std::vector<std::shared_ptr<DogBotN::ServoC> > jointServos;
@@ -83,6 +98,7 @@ int main(int argc, char **argv)
       jointState.velocity.push_back(velocity);
       jointState.effort.push_back(torque);
     }
+    pubJointState.publish(jointState);
   });
 #endif
   ROS_INFO("Setup complete ");

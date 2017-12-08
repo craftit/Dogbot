@@ -11,11 +11,20 @@ add_compile_options(-std=c++11)
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 find_package(catkin REQUIRED COMPONENTS
-  control_msgs
+  cmake_modules
+  hardware_interface
+  controller_manager
   roscpp
-  std_msgs
-  genmsg
+  control_msgs
+  trajectory_msgs
   actionlib
+  urdf
+  joint_limits_interface
+  transmission_interface
+  control_toolbox
+  std_msgs
+  sensor_msgs
+  rosparam_shortcuts
 )
 
 
@@ -105,9 +114,22 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES dogbot_driver
-#  CATKIN_DEPENDS roscpp std_msgs
+  INCLUDE_DIRS include
+  LIBRARIES ROSDogBot
+  CATKIN_DEPENDS 
+    hardware_interface
+    controller_manager
+    roscpp
+    control_msgs
+    trajectory_msgs
+    urdf
+    joint_limits_interface
+    transmission_interface
+    control_toolbox
+    std_msgs
+    sensor_msgs
+    rosparam_shortcuts
+    
 #  DEPENDS system_lib
 )
 
@@ -144,20 +166,21 @@ set(DOGBOTAPI_INCLUDE ${DOGBOTAPI_INSTALL}/include)
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
   ${DOGBOTAPI_INCLUDE}
 )
 
-## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/dogbot_driver.cpp
-# )
+# Declare a C++ library
+add_library(ROSDogBot
+   src/ROSHardwareInterface.cc
+)
+#   src/ROSHardware.cc
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(ROSDogBot ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} )
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
@@ -178,6 +201,7 @@ add_dependencies(dogbot_driver_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin
 target_link_libraries(dogbot_driver_node
    ${catkin_LIBRARIES}
    ${DOGBOTAPI_LIBRARY}
+    ROSDogBot
 )
 
 #############

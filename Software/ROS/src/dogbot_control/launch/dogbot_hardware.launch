@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- GDB functionality -->
+  <arg name="debug" default="false" />
+  <arg unless="$(arg debug)" name="launch_prefix" value="" />
+  <arg     if="$(arg debug)" name="launch_prefix" value="gdb --ex run --args" />
+
+  <!-- Load example URDF -->
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find dogbot_description)/urdf/dogbot.xacro'" />
+
+  <group ns="dogbot">
+
+    <!-- Load hardware interface -->
+    <node name="dogbot_hardware_interface" pkg="dogbot_control" type="dogbot_hw_main"
+          output="screen" launch-prefix="$(arg launch_prefix)"/>
+
+    <!-- Load controller settings -->
+    <rosparam file="$(find dogbot_control)/config/dogbot_controllers.yaml" command="load"/>
+
+    <!-- Load controller manager -->
+    <node name="ros_control_controller_manager" pkg="controller_manager" type="controller_manager" respawn="false"
+	  output="screen" args="spawn joint_state_controller position_trajectory_controller" />
+
+    <!-- Convert joint states to /tf tranforms -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+  </group>
+
+</launch>
