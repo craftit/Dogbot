@@ -36,12 +36,12 @@
    Desc:   Example ros_control main() entry point for controlling robots in ROS
 */
 
-#include "dogbot_control/dogbot_hw_control_loop.h"
-#include "dogbot_control/dogbot_hw_interface.h"
+#include <ros_control_boilerplate/generic_hw_control_loop.h>
+#include <ros_control_boilerplate/sim_hw_interface.h>
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "dogbot_hw_interface");
+  ros::init(argc, argv, "sim_hw_interface");
   ros::NodeHandle nh;
 
   // NOTE: We run the ROS loop in a separate thread as external calls such
@@ -49,14 +49,14 @@ int main(int argc, char** argv)
   ros::AsyncSpinner spinner(2);
   spinner.start();
 
-  // Create the hardware interface
-  std::shared_ptr<dogbot_control::DogBotHWInterface> dogbot_hw_interface = std::make_shared<dogbot_control::DogBotHWInterface>(nh);
-  dogbot_hw_interface->init();
+  // Create the hardware interface specific to your robot
+  boost::shared_ptr<ros_control_boilerplate::SimHWInterface> sim_hw_interface(new ros_control_boilerplate::SimHWInterface(nh));
+  sim_hw_interface->init();
 
   // Start the control loop
-  dogbot_control::DogbotHWControlLoop control_loop(nh, dogbot_hw_interface);
+  ros_control_boilerplate::GenericHWControlLoop control_loop(nh, sim_hw_interface);
 
-  // Wait until shutdown signal received
+  // Wait until shutdown signal recieved
   ros::waitForShutdown();
 
   return 0;

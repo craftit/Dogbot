@@ -33,31 +33,60 @@
  *********************************************************************/
 
 /* Author: Dave Coleman
-   Desc:   Example ros_control main() entry point for controlling robots in ROS
+   Desc:   Example ros_control hardware interface that performs a perfect control loop for
+   simulation
 */
 
-#include "dogbot_control/dogbot_hw_control_loop.h"
+#ifndef DOGBOT_ROS_CONTROL__SIM_HW_INTERFACE_H
+#define DOGBOT_ROS_CONTROL__SIM_HW_INTERFACE_H
+
 #include "dogbot_control/dogbot_hw_interface.h"
 
-int main(int argc, char** argv)
+namespace dogbot_control
 {
-  ros::init(argc, argv, "dogbot_hw_interface");
-  ros::NodeHandle nh;
 
-  // NOTE: We run the ROS loop in a separate thread as external calls such
-  // as service callbacks to load controllers can block the (main) control loop
-  ros::AsyncSpinner spinner(2);
-  spinner.start();
+/** \brief Hardware interface for a robot */
+class SimHWInterface : public DogBotHWInterface
+{
+public:
+  /**
+   * \brief Constructor
+   * \param nh - Node handle for topics.
+   */
+  SimHWInterface(ros::NodeHandle& nh, urdf::Model* urdf_model = NULL);
 
-  // Create the hardware interface
-  std::shared_ptr<dogbot_control::DogBotHWInterface> dogbot_hw_interface = std::make_shared<dogbot_control::DogBotHWInterface>(nh);
-  dogbot_hw_interface->init();
+  /** \brief Initialize the robot hardware interface */
+  virtual void init();
 
-  // Start the control loop
-  dogbot_control::DogbotHWControlLoop control_loop(nh, dogbot_hw_interface);
+  /** \brief Read the state from the robot hardware. */
+  virtual void read(ros::Duration &elapsed_time);
 
-  // Wait until shutdown signal received
-  ros::waitForShutdown();
+  /** \brief Write the command to the robot hardware. */
+  virtual void write(ros::Duration &elapsed_time);
 
-  return 0;
-}
+  /** \breif Enforce limits for all values before writing */
+  virtual void enforceLimits(ros::Duration &period);
+
+protected:
+
+  /** \brief Basic model of system for position control */
+  virtual void positionControlSimulation(ros::Duration &elapsed_time, const std::size_t joint_id);
+
+  // Name of this class
+  std::string name_;
+
+  // Simulated controller
+  double p_error_ = 0;
+  double v_error_ = 0;
+
+  // For position controller to estimate velocity
+  std::vector<double> joint_position_prev_;
+
+  // Send commands in different modes
+  int sim_control_mode_ = 0;
+
+};  // class
+
+}  // namespace
+
+#endif

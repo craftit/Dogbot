@@ -13,8 +13,11 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   cmake_modules
   roscpp
-  ros_control_boilerplate
 )
+#  ros_control_boilerplate
+
+find_package(Eigen3 REQUIRED)
+
 
 ###################################
 ## catkin specific configuration ##
@@ -27,18 +30,29 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES ROSDogBot
   CATKIN_DEPENDS 
-   ros_control_boilerplate
-   roscpp
-    
-#  DEPENDS system_lib
+    hardware_interface
+    controller_manager
+    roscpp
+    control_msgs
+    trajectory_msgs
+    urdf
+    joint_limits_interface
+    transmission_interface
+    control_toolbox
+    std_msgs
+    sensor_msgs
+    rosparam_shortcuts
+  LIBRARIES
+    dogbot_hw_interface
 )
+#   ros_control_boilerplate
 
 include (FindPkgConfig)
 if (PKG_CONFIG_FOUND)
   pkg_check_modules(JSONCPP jsoncpp)
   pkg_check_modules(LIBZMQ libzmq)
+  pkg_check_modules(LIBUSB libusb-1.0)
 endif()
 
 include_directories(${JSONCPP_INCLUDE_DIRS})
@@ -46,6 +60,11 @@ link_directories(${JSONCPP_LIBRARY_DIRS})
 
 include_directories(${LIBZMQ_INCLUDE_DIRS})
 link_directories(${LIBZMQ_LIBRARY_DIRS})
+
+include_directories(${LIBUSB_INCLUDE_DIRS})
+link_directories(${LIBUSB_LIBRARY_DIRS})
+
+include_directories(SYSTEM ${EIGEN3_INCLUDE_DIRS})
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -58,7 +77,7 @@ link_directories(${LIBZMQ_LIBRARY_DIRS})
 
 # There has got to be a better way of doing this, but later.
 set(DOGBOTAPI_INSTALL /home/charles/src/active/BMC2-Firmware/API)
-set(DOGBOTAPI_LIBRARY ${DOGBOTAPI_INSTALL}/build/src/libDogBotAPI.a jsoncpp zmq)
+set(DOGBOTAPI_LIBRARY ${DOGBOTAPI_INSTALL}/build/src/libDogBotAPI.a jsoncpp zmq usb-1.0)
 set(DOGBOTAPI_INCLUDE ${DOGBOTAPI_INSTALL}/include)
 
 include_directories(
@@ -72,9 +91,13 @@ link_directories(/opt/ros/kinetic/lib)
 # DogBot Hardware Interface
 add_library(dogbot_hw_interface
   src/dogbot_hw_interface.cpp
+  src/dogbot_hw_control_loop.cpp
+  src/sim_hw_interface.cpp
 )
 target_link_libraries(dogbot_hw_interface
-  generic_hw_interface
+  rosparam_shortcuts
+  controller_manager
+  urdf
   ${catkin_LIBRARIES}
 )
 
@@ -87,7 +110,6 @@ add_dependencies(dogbot_hw_main ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXP
 
 target_link_libraries(dogbot_hw_main
   dogbot_hw_interface
-  generic_hw_control_loop
   ${catkin_LIBRARIES}
   ${DOGBOTAPI_LIBRARY}
 )

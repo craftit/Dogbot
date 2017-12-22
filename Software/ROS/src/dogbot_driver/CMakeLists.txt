@@ -137,6 +137,7 @@ include (FindPkgConfig)
 if (PKG_CONFIG_FOUND)
   pkg_check_modules(JSONCPP jsoncpp)
   pkg_check_modules(LIBZMQ libzmq)
+  pkg_check_modules(LIBUSB libusb-1.0)
 endif()
 
 include_directories(${JSONCPP_INCLUDE_DIRS})
@@ -144,6 +145,9 @@ link_directories(${JSONCPP_LIBRARY_DIRS})
 
 include_directories(${LIBZMQ_INCLUDE_DIRS})
 link_directories(${LIBZMQ_LIBRARY_DIRS})
+
+include_directories(${LIBUSB_INCLUDE_DIRS})
+link_directories(${LIBUSB_LIBRARY_DIRS})
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -156,7 +160,7 @@ link_directories(${LIBZMQ_LIBRARY_DIRS})
 
 # There has got to be a better way of doing this, but later.
 set(DOGBOTAPI_INSTALL /home/charles/src/active/BMC2-Firmware/API)
-set(DOGBOTAPI_LIBRARY ${DOGBOTAPI_INSTALL}/build/src/libDogBotAPI.a jsoncpp zmq)
+set(DOGBOTAPI_LIBRARY ${DOGBOTAPI_INSTALL}/build/src/libDogBotAPI.a jsoncpp zmq usb-1.0)
 set(DOGBOTAPI_INCLUDE ${DOGBOTAPI_INSTALL}/include)
 
 ###########
