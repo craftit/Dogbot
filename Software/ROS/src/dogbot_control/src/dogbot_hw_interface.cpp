@@ -69,16 +69,16 @@ DogBotHWInterface::DogBotHWInterface(ros::NodeHandle &nh, urdf::Model *urdf_mode
 
     std::string devFilename = "local";
 
-    m_dogBotAPI = std::make_shared<DogBotN::DogBotAPIC>(devFilename,logger,DogBotN::DogBotAPIC::DMM_ClientOnly);
+    std::string configFile = "/home/charles/src/active/BMC2-Firmware/Config/config.json";
+    m_dogBotAPI = std::make_shared<DogBotN::DogBotAPIC>(devFilename,configFile,logger,DogBotN::DogBotAPIC::DMM_Auto);
     // FIXME:- Get this config from ROSParam
-    m_dogBotAPI->LoadConfig("/home/charles/src/active/BMC2-Firmware/Config/config.json");
     m_dogBotAPI->Init();
 
     m_actuators.empty();
     for(auto &name : joint_names_) {
       size_t at = name.rfind("_joint");
       std::string actname = name.substr(0,at);
-      m_actuators.push_back(m_dogBotAPI->GetServoByName(actname));
+      m_actuators.push_back(m_dogBotAPI->GetJointByName(actname));
       if(m_actuators.back()) {
         ROS_INFO_NAMED("dogbot_hw_interface", "Found hardware interface '%s' for joint '%s' ",actname.c_str(),name.c_str());
       } else {

@@ -38,10 +38,11 @@ int main(int argc, char **argv)
   auto logger = spdlog::stdout_logger_mt("console");
   logger->info("Starting API");
 
-  std::shared_ptr<DogBotN::DogBotAPIC> dogBotAPI = std::make_shared<DogBotN::DogBotAPIC>(devFilename,logger,DogBotN::DogBotAPIC::DMM_ClientOnly);
+  std::string configFile;
+  std::shared_ptr<DogBotN::DogBotAPIC> dogBotAPI = std::make_shared<DogBotN::DogBotAPIC>(devFilename,configFile,logger);
 
   // Connect and start things going.
-  dogBotAPI->Init(configFilename);
+  dogBotAPI->Init();
 
 #if 0
   urdf::Model model;
