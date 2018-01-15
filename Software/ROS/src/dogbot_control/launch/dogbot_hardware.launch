@@ -22,7 +22,7 @@
       
     <!-- Load controller manager -->
     <node name="ros_control_controller_manager" pkg="controller_manager" type="controller_manager" respawn="false"
-	  output="screen" args="spawn joint_state_controller position_trajectory_controller" />
+	  output="screen" args="spawn joint_state_controller front_right_roll_position_controller front_right_pitch_position_controller front_right_knee_position_controller front_left_roll_position_controller front_left_pitch_position_controller front_left_knee_position_controller back_right_roll_position_controller back_right_pitch_position_controller back_right_knee_position_controller back_left_roll_position_controller back_left_pitch_position_controller back_left_knee_position_controller" />
 
     <!-- Convert joint states to /tf tranforms -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
