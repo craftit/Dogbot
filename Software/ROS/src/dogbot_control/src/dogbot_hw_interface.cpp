@@ -38,6 +38,7 @@
 
 #include <dogbot_control/dogbot_hw_interface.h>
 #include <limits>
+#include <boost/filesystem/operations.hpp>
 
 // ROS parameter loading
 #include <rosparam_shortcuts/rosparam_shortcuts.h>
@@ -69,9 +70,16 @@ DogBotHWInterface::DogBotHWInterface(ros::NodeHandle &nh, urdf::Model *urdf_mode
 
     std::string devFilename = "local";
 
-    std::string configFile = "/home/charles/src/active/BMC2-Firmware/Config/config.json";
+    std::string configFile;
+
+    if (!ros::param::get("dogbot_config", configFile)){
+      ROS_ERROR_NAMED("dogbot_hw_interface", "Failed to find dogbot config file name from ROS parameter server");
+    }
+    //deal with things like "~/.config"
+    boost::filesystem::path tmp{configFile};
+    configFile = boost::filesystem::canonical(tmp).c_str();
     m_dogBotAPI = std::make_shared<DogBotN::DogBotAPIC>(devFilename,configFile,logger,DogBotN::DogBotAPIC::DMM_Auto);
-    // FIXME:- Get this config from ROSParam
+
     m_dogBotAPI->Init();
 
     m_actuators.empty();

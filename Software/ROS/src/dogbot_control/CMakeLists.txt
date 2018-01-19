@@ -53,6 +53,7 @@ if (PKG_CONFIG_FOUND)
   pkg_check_modules(JSONCPP jsoncpp)
   pkg_check_modules(LIBZMQ libzmq)
   pkg_check_modules(LIBUSB libusb-1.0)
+  pkg_check_modules(DOGBOTAPI DogBotAPI)
 endif()
 
 include_directories(${JSONCPP_INCLUDE_DIRS})
@@ -73,12 +74,8 @@ include_directories(SYSTEM ${EIGEN3_INCLUDE_DIRS})
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
-#FIND_LIBRARY(DOGBOTAPI_LIBRARY DogBotAPI /home/charles/src/active/BMC2-Firmware/API/build)
-
-# There has got to be a better way of doing this, but later.
-set(DOGBOTAPI_INSTALL /home/charles/src/active/BMC2-Firmware/API)
-set(DOGBOTAPI_LIBRARY ${DOGBOTAPI_INSTALL}/build/src/libDogBotAPI.a jsoncpp zmq usb-1.0)
-set(DOGBOTAPI_INCLUDE ${DOGBOTAPI_INSTALL}/include)
+set(DOGBOTAPI_LIBRARY /usr/local/lib/libDogBotAPI.a jsoncpp zmq usb-1.0)
+set(DOGBOTAPI_INCLUDE /usr/local/include)
 
 include_directories(
   include/
