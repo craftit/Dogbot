@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="configname" value="configexample.json" />
-  <arg name="nspace" value="dogbot" />
+  <arg name="nspace" value="testrig" />
   
   <!-- GDB functionality -->
   <arg name="debug" default="false" />
