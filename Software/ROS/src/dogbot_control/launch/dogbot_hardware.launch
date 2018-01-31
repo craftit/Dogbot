@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="configname" value="configexample.json" />
-  <arg name="nspace" value="dogbot" />
+  <arg name="namespace" value="dogbot" />
   
   <!-- GDB functionality -->
   <arg name="debug" default="false" />
@@ -11,7 +11,7 @@
   <!-- Load example URDF -->
   <param name="robot_description" command="$(find xacro)/xacro.py '$(find dogbot_description)/urdf/dogbot.xacro'" />
 
-  <group ns="$(arg nspace)">
+  <group ns="$(arg namespace)">
 
     <!-- Load hardware interface -->
     <node name="dogbot_hardware_interface" pkg="dogbot_control" type="dogbot_hw_main"

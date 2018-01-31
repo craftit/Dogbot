@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="configname" value="configexample.json" />
-  <arg name="nspace" value="testrig" />
+  <arg name="configname" value="testrig1.json" />
+  <arg name="namespace" value="testrig" />
   
   <!-- GDB functionality -->
   <arg name="debug" default="false" />
@@ -11,19 +11,19 @@
   <!-- Load example URDF -->
   <param name="robot_description" command="$(find xacro)/xacro.py '$(find dogbot_description)/urdf/dogbot.xacro'" />
 
-  <group ns="$(arg nspace)">
+  <group ns="$(arg namespace)">
 
     <!-- Load hardware interface -->
     <node name="dogbot_hardware_interface" pkg="dogbot_control" type="dogbot_hw_main"
           output="screen" launch-prefix="$(arg launch_prefix)"/>
 
     <!-- Load controller settings -->
-    <rosparam file="$(find dogbot_control)/config/dogbot_controllers.yaml" command="load"/>
+    <rosparam file="$(find dogbot_control)/config/testrig_controllers.yaml" command="load"/>
     <param name="dogbot_config" value="/home/$(env USER)/.config/DogBot/$(arg configname)" />
       
     <!-- Load controller manager -->
     <node name="ros_control_controller_manager" pkg="controller_manager" type="controller_manager" respawn="false"
-	  output="screen" args="spawn joint_state_controller front_right_roll_position_controller front_right_pitch_position_controller front_right_knee_position_controller front_left_roll_position_controller front_left_pitch_position_controller front_left_knee_position_controller back_right_roll_position_controller back_right_pitch_position_controller back_right_knee_position_controller back_left_roll_position_controller back_left_pitch_position_controller back_left_knee_position_controller" />
+	  output="screen" args="spawn joint_state_controller front_right_pitch_position_controller front_right_knee_position_controller" />
 
     <!-- Convert joint states to /tf tranforms -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
