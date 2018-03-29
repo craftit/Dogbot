@@ -68,7 +68,7 @@
   </gazebo>
    
   <xacro:macro name="leg" params="prefix suffix reflectx reflecty">
-    <link name="${prefix}_${suffix}_roll">
+    <link name="${prefix}_${suffix}_hip">
       <visual>
         <origin xyz="0 0 0" rpy="${pi/2} 0 0" />
         <geometry>
@@ -90,7 +90,7 @@
     <joint name="${prefix}_${suffix}_roll_joint" type="revolute">
       <axis xyz="0 1 0" rpy="0 0 0" />
       <parent link="body"/>
-      <child link="${prefix}_${suffix}_roll"/>
+      <child link="${prefix}_${suffix}_hip"/>
       <origin xyz="${legoffset*reflectx} ${bodylen * reflecty/2} 0" rpy="0 0 ${-pi*(1-reflecty)/2}"/>
       <limit 
          lower ="${(-pi * (reflectx * reflecty +1)/2) + (pi * (reflectx * reflecty -1)/8) }" 
@@ -130,7 +130,7 @@
 
     <joint name="${prefix}_${suffix}_pitch_joint" type="revolute">
       <axis xyz="0 1 0" rpy="0 0 0" />
-      <parent link="${prefix}_${suffix}_roll"/>
+      <parent link="${prefix}_${suffix}_hip"/>
       <child link="${prefix}_${suffix}_upperleg"/>
       <!--  rpy="0  ${pi * reflectx/2.3} ${pi *reflectx *reflecty /2} -->
       <origin xyz="${0.04*reflectx*reflecty} 0.07 -0.080" rpy="0  ${pi * reflectx/2} ${pi *reflectx *reflecty /2}"/>
@@ -201,7 +201,7 @@
       <joint name="${prefix}_${suffix}_roll_joint">
         <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
       </joint>
-      <actuator name="${prefix}_${suffix}_roll_actuator" >
+      <actuator name="${prefix}_${suffix}_roll_motor" >
         <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
@@ -212,7 +212,7 @@
       <joint name="${prefix}_${suffix}_pitch_joint">
         <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
       </joint>
-      <actuator name="${prefix}_${suffix}_pitch_actuator" >
+      <actuator name="${prefix}_${suffix}_pitch_motor" >
         <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>
@@ -223,7 +223,7 @@
       <joint name="${prefix}_${suffix}_knee_joint">
         <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
       </joint>
-      <actuator name="${prefix}_${suffix}_knee_actuator" >
+      <actuator name="${prefix}_${suffix}_knee_motor" >
         <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         <mechanicalReduction>1</mechanicalReduction>
       </actuator>

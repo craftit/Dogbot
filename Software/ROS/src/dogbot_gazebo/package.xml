@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<package>
+  <name>dogbot_gazebo</name>
+  <version>0.1.0</version>
+  <description>
+        URDF description for ReactAI's DogBot
+  </description>
+
+  <maintainer email="craftit@gmail.com">Charles Galambos</maintainer>
+
+  <!-- One license tag required, multiple allowed, one license per tag -->
+  <!-- Commonly used license strings: -->
+  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
+  <license>TODO</license>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>urdf</run_depend>
+  <run_depend>dogbot_description</run_depend>
+  <run_depend>gazebo_ros_pkgs</run_depend>
+  <run_depend>gazebo_ros</run_depend>
+  <run_depend>gazebo_ros_control</run_depend>
+  <run_depend>ros_controllers</run_depend>
+  <run_depend>joint_state_controller</run_depend>
+  <run_depend>joint_trajectory_controller</run_depend>
+  <run_depend>effort_controllers</run_depend>
+  <run_depend>robot_state_publisher</run_depend>
+  
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>
