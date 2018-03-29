@@ -1,0 +1,54 @@
+
+# Individual Position Controllers ---------------------------------------
+# Allows to send individual ROS msg of Float64 to each joint separately
+front_right_roll_position_controller:
+  type: effort_controllers/JointPositionController
+  joint: front_right_roll_joint
+  pid: {p: 100.0, i: 0.01, d: 10.0}
+front_right_pitch_position_controller:
+  type: effort_controllers/JointPositionController
+  joint: front_right_pitch_joint
+  pid: {p: 100.0, i: 0.01, d: 10.0}
+front_right_knee_position_controller:
+  type: effort_controllers/JointPositionController
+  joint: front_right_knee_joint
+  pid: {p: 100.0, i: 0.01, d: 10.0}
+  
+front_left_roll_position_controller:
+  type: effort_controllers/JointPositionController
+  joint: front_left_roll_joint
+  pid: {p: 100.0, i: 0.01, d: 10.0}
+front_left_pitch_position_controller:
+  type: effort_controllers/JointPositionController
+  joint: front_left_pitch_joint
+  pid: {p: 100.0, i: 0.01, d: 10.0}
+front_left_knee_position_controller:
+  type: effort_controllers/JointPositionController
+  joint: front_left_knee_joint
+  pid: {p: 100.0, i: 0.01, d: 10.0}
+
+back_right_roll_position_controller:
+  type: effort_controllers/JointPositionController
+  joint: back_right_roll_joint
+  pid: {p: 100.0, i: 0.01, d: 10.0}
+back_right_pitch_position_controller:
+  type: effort_controllers/JointPositionController
+  joint: back_right_pitch_joint
+  pid: {p: 100.0, i: 0.01, d: 10.0}
+back_right_knee_position_controller:
+  type: effort_controllers/JointPositionController
+  joint: back_right_knee_joint
+  pid: {p: 100.0, i: 0.01, d: 10.0}
+  
+back_left_roll_position_controller:
+  type: effort_controllers/JointPositionController
+  joint: back_left_roll_joint
+  pid: {p: 100.0, i: 0.01, d: 10.0}
+back_left_pitch_position_controller:
+  type: effort_controllers/JointPositionController
+  joint: back_left_pitch_joint
+  pid: {p: 100.0, i: 0.01, d: 10.0}
+back_left_knee_position_controller:
+  type: effort_controllers/JointPositionController
+  joint: back_left_knee_joint
+  pid: {p: 100.0, i: 0.01, d: 10.0} 
