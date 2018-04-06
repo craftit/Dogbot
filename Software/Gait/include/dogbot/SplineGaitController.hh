@@ -56,11 +56,13 @@ namespace DogBotN {
 
     float m_maxSpeed = 6;
 
+    float m_zOffset = 0.7;
+
     float m_zCentre = 0.0;
     float m_defaultZcentre = 0.0;
     float m_zCentreRange = 0.15;
 
-    float m_Xcentre = -0.06;
+    float m_Xcentre = -0.00;
     float m_defaultXcentre = -0.06;
     float m_xCentreRange = 0.15;
 
@@ -69,7 +71,7 @@ namespace DogBotN {
     float m_minTimePropel = 0.05;
     float m_maxTimePropel = 1.0;
 
-    float m_hightAdjust = 0.15;
+    float m_hightAdjust = 0.4;
     float m_defaultHightAdjust = 0.15;
     float m_maxHightAdjust = 0.23;
 
@@ -80,7 +82,7 @@ namespace DogBotN {
     float m_footRotate = 0;
     float m_footRotateMax = M_PI/2;
 
-    float m_footSeperation = 0.05;
+    float m_footSeperation = 0.00;
     float m_footSeperationDefault = 0.05;
     float m_footSeperationRange = 0.2;
 
@@ -92,7 +94,7 @@ namespace DogBotN {
 
     float m_phase = 0;  //!< Current phase in radians
     float m_defaultOmega = 4;  //!< Radians / second cycle speed
-    float m_omega = 4;  //!< Radians / second cycle speed
+    float m_omega = 2;  //!< Radians / second cycle speed
 
     float m_phases[4] = { 0,0,0,0 };
     //LegKinematicsC m_legKinematics;

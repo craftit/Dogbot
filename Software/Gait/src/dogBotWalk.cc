@@ -27,6 +27,8 @@ int main(int argc,char **argv)
   float torque = 3.0;
   float range = 45.0;
   float angle = 0;
+  float velocityLimit = 300.0;
+  bool plotGait = false;
   try
   {
     cxxopts::Options options(argv[0], "DogBot hardware manager");
@@ -38,6 +40,9 @@ int main(int argc,char **argv)
       ("c,config", "Configuration file", cxxopts::value<std::string>(configFile))
       ("d,device", "Device to use from communication. Typically 'local' for local server or 'usb' for direct connection ", cxxopts::value<std::string>(devFilename))
       ("j,joint","Joint name", cxxopts::value<std::string>(jointName))
+      ("t,torque","Maximum torque to apply", cxxopts::value<float>(torque))
+      ("v,velocity","Maximum velocity to allow",cxxopts::value<float>(velocityLimit))
+      ("p,plot","Plot gait. ",cxxopts::value<bool>(plotGait))
       ("h,help", "Print help")
     ;
 
@@ -60,18 +65,27 @@ int main(int argc,char **argv)
   logger->info("Using config file: '{}'",configFile);
   logger->info("Using communication type: '{}'",devFilename);
 
+  DogBotN::SplineGaitControllerC gaitController;
+
+  if(plotGait) {
+    gaitController.PlotGait();
+    return 1;
+  }
+
   std::shared_ptr<DogBotN::DogBotAPIC> dogbot = std::make_shared<DogBotN::DogBotAPIC>(
       devFilename,
       configFile,
       logger
       );
 
+
+
   // Wait for poses to update and things to settle.
   sleep(1);
 
   {
     // Lift the speed limit a bit
-    dogbot->Connection()->SetParam(0,CPI_VelocityLimit,(float) 300.0);
+    dogbot->Connection()->SetParam(0,CPI_VelocityLimit,velocityLimit);
 
     std::shared_ptr<DogBotN::LegControllerC> legs[4];
     legs[0] = std::make_shared<DogBotN::LegControllerC>(dogbot,"front_left");
@@ -80,7 +94,6 @@ int main(int argc,char **argv)
     legs[3] = std::make_shared<DogBotN::LegControllerC>(dogbot,"back_right");
 
 
-    DogBotN::SplineGaitControllerC gaitController;
 
     while(1) {
 

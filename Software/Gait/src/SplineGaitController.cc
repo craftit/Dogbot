@@ -67,16 +67,11 @@ namespace DogBotN {
 
   void SplineGaitControllerC::GenerateFootTrajectory()
   {
-    FootTrajectoryC trajectory(
-        m_zCentre, // Zc,  Z center
-        m_Xcentre, // Xc,  X center
-        m_lengthPropel,  // Lpr,
-        m_timePropel,   // tpr,
-        m_hightAdjust,   // tad, Time adjust
-        0.2,   // Had, hight adjust
-        0.02    // Tpu, Time push
-        );
-
+    float hightAdjust = 0.2;
+    float timePush = 0.02;
+#if 0
+    // Trot
+    m_timePropel = 0.5;
 
     m_phases[0] = 0;
     m_phases[1] = M_PI;
@@ -84,6 +79,33 @@ namespace DogBotN {
     m_phases[3] = 0;
 
     m_omega = 6;
+#else
+    // Walk
+    m_lengthPropel = 0.25;
+    m_timePropel = 0.65;
+    hightAdjust = 0.15;
+    timePush = 0.3766;
+
+    m_phases[0] = 0;
+    m_phases[1] = 3* M_PI/2.0;
+    m_phases[2] = M_PI;
+    m_phases[3] = M_PI/2.0;
+
+    m_omega = 3;
+
+#endif
+
+    FootTrajectoryC trajectory(
+        m_zCentre, // Zc,  Z center
+        m_Xcentre, // Xc,  X center
+        m_lengthPropel,  // Lpr,
+        m_timePropel,   // tpr,
+        m_hightAdjust,   // tad, Time adjust
+        hightAdjust,   // Had, hight adjust
+        timePush    // Tpu, Time push
+        );
+
+
 
     m_footTrajectories[0].Setup(trajectory.GenerateTrajectory(-m_footRotate,m_footSeperation,m_tiltX + m_tiltY));
     m_footTrajectories[1].Setup(trajectory.GenerateTrajectory(-m_footRotate,-m_footSeperation,m_tiltX - m_tiltY));
@@ -137,7 +159,7 @@ namespace DogBotN {
       Eigen::Vector3f pntx(
           pnt[1],
           pnt[0],
-          0.5 - pnt[2]
+          m_zOffset - pnt[2]
           );
 
 #if 0
