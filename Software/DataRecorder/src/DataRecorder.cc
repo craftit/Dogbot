@@ -105,7 +105,7 @@ namespace DogBotN {
 
     if(query.empty()) {
       query.reserve(4096);
-      query += "INSERT INTO dogbot1.joint_report (sourceid,logtime,synctime,position,effort) VALUES ";
+      query += "INSERT INTO dogbot1.joint_report (sourceid,logtime,synctime,position,velocity,effort) VALUES ";
     } else
       query += ",";
 
@@ -117,6 +117,8 @@ namespace DogBotN {
     query += txn.quote((unsigned) pkt->m_timestamp);
     query += ",";
     query += txn.quote(ComsC::PositionReport2Angle(pkt->m_position));
+    query += ",";
+    query += txn.quote(ComsC::VelocityReport2Angle(pkt->m_velocity));
     query += ",";
     query += txn.quote(ComsC::TorqueReport2Fraction(pkt->m_torque));
     query += ")";

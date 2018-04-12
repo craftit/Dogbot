@@ -28,6 +28,7 @@ sourceid text,
 logtime TIMESTAMPTZ DEFAULT now(),
 synctime INT, 
 position REAL,
+velocity REAL,
 effort REAL);
 
 -- joint states
