@@ -45,6 +45,26 @@ namespace DogBotN {
 
   }
 
+  //! Find the name for a device
+  std::string PGDataRecorderC::DeviceName(int deviceId)
+  {
+    assert(deviceId < 256);
+    if(deviceId < 0 || deviceId > 255)
+      return "Invalid";
+    std::lock_guard<std::mutex> lock(m_accessDeviceData);
+
+    while(deviceId >= m_deviceNames.size()) {
+      m_deviceNames.push_back(std::string());
+    }
+    if(m_deviceNames[deviceId].empty()) {
+      auto servoPtr = m_api->GetServoById(deviceId);
+      if(!servoPtr)
+        return std::to_string(deviceId);
+      m_deviceNames[deviceId] = servoPtr->Name();
+    }
+    return m_deviceNames[deviceId];
+  }
+
 
   static std::string AsISO8601(const struct timeval &when) {
     struct tm b;
@@ -83,13 +103,14 @@ namespace DogBotN {
     }
     const PacketServoReportC *pkt = (const PacketServoReportC *) a.m_data;
 
-    if(query.empty())
+    if(query.empty()) {
+      query.reserve(4096);
       query += "INSERT INTO dogbot1.joint_report (sourceid,logtime,synctime,position,effort) VALUES ";
-    else
+    } else
       query += ",";
 
     query += "(";
-    query += txn.quote(m_deviceNames[pkt->m_deviceId]);
+    query += txn.quote(DeviceName(pkt->m_deviceId));
     query += ",";
     query += txn.quote(AsISO8601(a.m_when));
     query += ",";
@@ -111,13 +132,14 @@ namespace DogBotN {
       return false;
     }
     const PacketServoC *pkt = (const PacketServoC *) a.m_data;
-    if(query.empty())
+    if(query.empty()) {
+      query.reserve(4096);
       query += "INSERT INTO dogbot1.joint_demand (sourceid,logtime,position,effort_limit) VALUES ";
-    else
+    } else
       query += ",";
 
     query += "(";
-    query += txn.quote(m_deviceNames[pkt->m_deviceId]);
+    query += txn.quote(DeviceName(pkt->m_deviceId));
     query += ",";
     query += txn.quote(AsISO8601(a.m_when));
     query += ",";
@@ -134,14 +156,15 @@ namespace DogBotN {
   {
     const PacketParam8ByteC *pkt = (const PacketParam8ByteC *) a.m_data;
 
-    if(query.empty())
+    if(query.empty()) {
+      query.reserve(4096);
       query += "INSERT INTO dogbot1.parameter_report (sourceid,logtime,parameter,value) VALUES ";
-    else
+    } else
       query += ",";
 
     enum ComsParameterIndexT paramIndex =  (enum ComsParameterIndexT) pkt->m_header.m_index;
     query += "(";
-    query += txn.quote(m_deviceNames[pkt->m_header.m_deviceId]);
+    query += txn.quote(DeviceName(pkt->m_header.m_deviceId));
     query += ",";
     query += txn.quote(AsISO8601(a.m_when));
     query += ",";
@@ -226,11 +249,76 @@ namespace DogBotN {
     return true;
   }
 
+  //! Log an emergency stop
+  bool PGDataRecorderC::LogEmergencyStop(pqxx::work &txn,std::string &query,PGLogEntryC &entry)
+  {
+    const PacketEmergencyStopC *pkt = (const PacketEmergencyStopC *) entry.m_data;
+
+    if(query.empty()) {
+      query.reserve(4096);
+      query += "INSERT INTO dogbot1.emergency_stop (sourceid,logtime,cause) VALUES ";
+    } else
+      query += ",";
+
+    query += "(";
+    query += txn.quote(DeviceName(pkt->m_deviceId));
+    query += ",";
+    query += txn.quote(AsISO8601(entry.m_when));
+    query += ",";
+    query += txn.quote(ComsStateChangeSource((enum StateChangeSourceT) pkt->m_cause));
+    query += ")";
+
+    return true;
+  }
+
+  //! Log an error
+  bool PGDataRecorderC::LogError(pqxx::work &txn,std::string &query,PGLogEntryC &entry)
+  {
+    const PacketErrorC *pkt = (const PacketErrorC *) entry.m_data;
+
+    if(query.empty()) {
+      query.reserve(4096);
+      query += "INSERT INTO dogbot1.error (sourceid,logtime,name,cause,data) VALUES ";
+    } else
+      query += ",";
+
+    query += "(";
+    query += txn.quote(DeviceName(pkt->m_deviceId));
+    query += ",";
+    query += txn.quote(AsISO8601(entry.m_when));
+    query += ",";
+    query += txn.quote(ComsErrorTypeToString((enum ComsErrorTypeT) pkt->m_errorCode));
+    query += ",";
+    std::string causeType = std::to_string((int) pkt->m_causeType);
+    query += txn.quote(causeType);
+    query += ",";
+    std::string errorData = std::to_string((int) pkt->m_errorData);
+    query += txn.quote(errorData);
+    query += ")";
+
+    return true;
+  }
+
+  //! Issue a query
+  bool PGDataRecorderC::IssueQuery(pqxx::work &txn,std::string &query)
+  {
+    if(query.empty())
+      return true;
+    query += ';';
+    txn.exec(query,"Data logging");
+    return true;
+  }
+
+
   //! Write worker thread
   void PGDataRecorderC::WriteThread()
   {
+    std::chrono::steady_clock::time_point nextUpdate = std::chrono::steady_clock::now();
+
     while(!m_terminated) {
-      std::vector<PGLogEntryC> batch;
+
+      std::this_thread::sleep_until(nextUpdate);
+      nextUpdate += std::chrono::milliseconds(50);
 
       {
         m_recordQueueWrite.clear();
@@ -240,10 +328,7 @@ namespace DogBotN {
 
       pqxx::work txn(m_connection,"Insert Log Data");
 
-      std::string query;
-      std::string reportQuery;
-      std::string demandQuery;
-      reportQuery.reserve(2048);
+      std::vector<std::string> queries((unsigned) CPT_Final);
 
       int msgCount = 0;
 
@@ -252,36 +337,32 @@ namespace DogBotN {
         enum ComsPacketTypeT packetType = (enum ComsPacketTypeT) a.m_data[0];
         int deviceId = a.m_data[1];
 
-        //pqxx::result result = txn.exec(query);
-
-
         switch(packetType)
         {
           case CPT_NoOp: break;
           case CPT_EmergencyStop: {
+            if(LogEmergencyStop(txn,queries[packetType],a))
+              msgCount++;
           } break;
           case CPT_ServoReport: {
-            if(LogServoReport(txn,reportQuery,a))
+            if(LogServoReport(txn,queries[packetType],a))
               msgCount++;
           } break;
           case CPT_Servo: {
-            if(LogServo(txn,demandQuery,a))
+            if(LogServo(txn,queries[packetType],a))
               msgCount++;
           } break;
           case CPT_ReportParam: {
-            if(LogParamReport(txn,demandQuery,a))
+            if(LogParamReport(txn,queries[packetType],a))
               msgCount++;
           } break;
-
+          case CPT_Error: {
+            if(LogError(txn,queries[packetType],a))
+              msgCount++;
+          } break;
 #if 0
-          CPT_NoOp    =  0, // No op.
-          CPT_EmergencyStop =  1, // Set parameter (Used to for emergency stop)
           CPT_SyncTime      =  2, // Sync time across controllers.
-          CPT_Error         =  3, // Error report
           CPT_SetParam      =  4, // Set parameter
-          CPT_Servo         =  5, // Servo control position
-          CPT_ServoReport   =  6, // Report servo position
-          CPT_ReportParam   =  7, // Report parameter
           CPT_ReadParam     =  8, // Read parameter
           CPT_Pong          =  9, // Ping reply.
           CPT_Ping          = 10, // Ping request
@@ -308,14 +389,8 @@ namespace DogBotN {
 
       }
 
-      if(!reportQuery.empty()) {
-        reportQuery += ';';
-        txn.exec(reportQuery,"Report data");
-      }
-      if(!demandQuery.empty()) {
-        reportQuery += ';';
-        txn.exec(demandQuery,"Demand data");
-      }
+      for(auto &query : queries)
+        IssueQuery(txn,query);
 
       txn.commit();
       if(m_recordQueueWrite.size() > 0) {
@@ -325,18 +400,6 @@ namespace DogBotN {
 
 
     }
-  }
-
-  //! Add name of servo with given id to cache.
-  void PGDataRecorderC::AddServoName(int id)
-  {
-    assert(id < 256);
-    auto servoPtr = m_api->GetServoById(id);
-    if(!servoPtr)
-      return ;
-    while(m_deviceNames.size() <= id)
-      m_deviceNames.push_back("");
-    m_deviceNames[id] = servoPtr->Name();
   }
 
 
@@ -353,7 +416,7 @@ namespace DogBotN {
         continue;
       assert(a->Id() < 256);
       while(m_deviceNames.size() <= a->Id())
-        m_deviceNames.push_back("");
+        m_deviceNames.push_back(std::string());
       m_deviceNames[a->Id()] = a->Name();
     }
 

@@ -32,6 +32,9 @@ namespace DogBotN {
 
   protected:
 
+    //! Find the name for a device
+    std::string DeviceName(int deviceId);
+
     class PGLogEntryC
     {
     public:
@@ -42,9 +45,6 @@ namespace DogBotN {
       int m_len = 0;
       uint8_t m_data[16];
     };
-
-    //! Add name of servo with given id to cache.
-    void AddServoName(int id);
 
     void RecordPacket(bool isCommand,const uint8_t *data,int len);
 
@@ -57,9 +57,19 @@ namespace DogBotN {
     //! Log a servo demand message.
     bool LogServo(pqxx::work &txn,std::string &query,PGLogEntryC &entry);
 
+    //! Log an emergency stop
+    bool LogEmergencyStop(pqxx::work &txn,std::string &query,PGLogEntryC &entry);
+
     //! Log a parameter report message
     bool LogParamReport(pqxx::work &txn,std::string &query,PGLogEntryC &entry);
 
+    //! Log an error
+    bool LogError(pqxx::work &txn,std::string &query,PGLogEntryC &entry);
+
+    //! Issue a query
+    bool IssueQuery(pqxx::work &txn,std::string &query);
+
+    std::mutex m_accessDeviceData;
     std::vector<std::string> m_deviceNames;
 
     std::shared_ptr<spdlog::logger> m_log = spdlog::get("console");
