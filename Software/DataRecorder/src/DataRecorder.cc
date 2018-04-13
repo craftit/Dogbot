@@ -105,9 +105,14 @@ namespace DogBotN {
 
     if(query.empty()) {
       query.reserve(4096);
-      query += "INSERT INTO dogbot1.joint_report (sourceid,logtime,synctime,position,velocity,effort) VALUES ";
+      query += "INSERT INTO dogbot1.joint_report (sourceid,logtime,synctime,position,velocity,effort,reference,position_limit,torque_limit,velocity_limit,index_sensor) VALUES ";
     } else
       query += ",";
+
+    //reference TEXT,
+    //positionLimit BOOLEAN,
+    //torqueLimit BOOLEAN,
+    //velocityLimit BOOLEAN
 
     query += "(";
     query += txn.quote(DeviceName(pkt->m_deviceId));
@@ -121,7 +126,18 @@ namespace DogBotN {
     query += txn.quote(ComsC::VelocityReport2Angle(pkt->m_velocity));
     query += ",";
     query += txn.quote(ComsC::TorqueReport2Fraction(pkt->m_torque));
+    query += ",";
+    query += txn.quote(ComsPositionRefrenceToString((enum PositionReferenceT)(pkt->m_mode & DOGBOT_SERVOREPORTMODE_POSITIONREF)));
+    query += ",";
+    query += txn.quote((pkt->m_mode & DOGBOT_SERVOREPORTMODE_LIMITPOSITION) != 0);
+    query += ",";
+    query += txn.quote((pkt->m_mode & DOGBOT_SERVOREPORTMODE_LIMITTORQUE) != 0);
+    query += ",";
+    query += txn.quote((pkt->m_mode & DOGBOT_SERVOREPORTMODE_LIMITVELOCITY) != 0);
+    query += ",";
+    query += txn.quote((pkt->m_mode & DOGBOT_SERVOREPORTMODE_INDEXSENSOR) != 0);
     query += ")";
+
     return true;
   }
 

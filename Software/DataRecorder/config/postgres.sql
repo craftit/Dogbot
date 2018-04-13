@@ -29,7 +29,13 @@ logtime TIMESTAMPTZ DEFAULT now(),
 synctime INT, 
 position REAL,
 velocity REAL,
-effort REAL);
+effort REAL,
+reference TEXT,
+position_limit BOOLEAN,
+torque_limit BOOLEAN,
+velocity_limit BOOLEAN,
+index_sensor BOOLEAN
+);
 
 -- joint states
 CREATE TABLE IF NOT EXISTS dogbot1.joint_state (id BIGSERIAL PRIMARY KEY, 
