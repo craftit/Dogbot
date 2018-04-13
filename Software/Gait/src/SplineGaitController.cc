@@ -82,16 +82,16 @@ namespace DogBotN {
 #else
     // Walk
     m_lengthPropel = 0.25;
-    m_timePropel = 0.65;
+    m_timePropel = 0.75;
     hightAdjust = 0.15;
-    timePush = 0.3766;
+    timePush = 0.02;
 
     m_phases[0] = 0;
     m_phases[1] = 3* M_PI/2.0;
     m_phases[2] = M_PI;
     m_phases[3] = M_PI/2.0;
 
-    m_omega = 3;
+    m_omega = 1;
 
 #endif
 
