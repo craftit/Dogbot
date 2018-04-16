@@ -10,6 +10,8 @@ This code has been tested for installation and operation on Ubuntu Linux.
 
 [ROS] must be installed; the code has been tested against the Kinetic release.  The repository contains a [catkin](http://wiki.ros.org/catkin) workspace under [Software/ROS](./Software/ROS), which should be built with `catkin build`
 
+You may need to install the packages `ros-kinetic-rosparam-shortcuts ros-kinetic-ros-control ros-kinetic-ros-controllers` 
+
 # Operation via Firmware and ROS
 
 ## Home the motors
