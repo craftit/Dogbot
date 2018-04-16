@@ -26,4 +26,8 @@ Top-level files start with gz
 
 Other files are components, intended to be included into the higher-level files (esp. to set the namespace correctly)
 
+# Prerequisites
 
+Ensure you have gazebo-ros control packages installed, http://wiki.ros.org/gazebo_ros_control
+
+<pre>sudo apt-get install ros-kinetic-gazebo-ros-pkgs ros-kinetic-gazebo-ros-control</pre>
