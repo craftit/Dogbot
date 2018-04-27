@@ -37,10 +37,8 @@ namespace DogBotN {
   //! Create schema in database.
   void PGDataRecorderC::CreateSchema()
   {
-    pqxx::connection dbcon(m_databaseConnectionString);
-
-
-    pqxx::work txn(m_connection,"Create schema");
+    //pqxx::connection dbcon(m_databaseConnectionString);
+    //pqxx::work txn(m_connection,"Create schema");
 
 
   }
@@ -105,14 +103,9 @@ namespace DogBotN {
 
     if(query.empty()) {
       query.reserve(4096);
-      query += "INSERT INTO dogbot1.joint_report (sourceid,logtime,synctime,position,velocity,effort,reference,position_limit,torque_limit,velocity_limit,index_sensor) VALUES ";
+      query += "INSERT INTO joint_report (sourceid,logtime,synctime,position,velocity,effort,reference,position_limit,torque_limit,velocity_limit,index_sensor) VALUES ";
     } else
       query += ",";
-
-    //reference TEXT,
-    //positionLimit BOOLEAN,
-    //torqueLimit BOOLEAN,
-    //velocityLimit BOOLEAN
 
     query += "(";
     query += txn.quote(DeviceName(pkt->m_deviceId));
@@ -152,7 +145,7 @@ namespace DogBotN {
     const PacketServoC *pkt = (const PacketServoC *) a.m_data;
     if(query.empty()) {
       query.reserve(4096);
-      query += "INSERT INTO dogbot1.joint_demand (sourceid,logtime,position,effort_limit) VALUES ";
+      query += "INSERT INTO joint_demand (sourceid,logtime,position,effort_limit) VALUES ";
     } else
       query += ",";
 
@@ -176,7 +169,7 @@ namespace DogBotN {
 
     if(query.empty()) {
       query.reserve(4096);
-      query += "INSERT INTO dogbot1.parameter_report (sourceid,logtime,parameter,value) VALUES ";
+      query += "INSERT INTO parameter_report (sourceid,logtime,parameter,value) VALUES ";
     } else
       query += ",";
 
@@ -190,9 +183,12 @@ namespace DogBotN {
     query += ",";
     switch(DogBotN::ComsParameterIndexToType(paramIndex))
     {
+      default:
       case CPIT_Unknown:
       case CPIT_Invalid:
       case CPIT_Custom:
+        m_log->warn("Don't know how to handle field {} with parameter type {} ",DogBotN::ComsParameterIndexToString(paramIndex),(int) DogBotN::ComsParameterIndexToType(paramIndex));
+        query += txn.quote("?");
         break;
       case CPIT_enum8:
         switch(paramIndex)
@@ -255,6 +251,7 @@ namespace DogBotN {
         query += txn.quote(std::to_string(pkt->m_data.uint32[0]).c_str());
         break;
       case CPIT_uint32_2:
+        query += txn.quote(std::to_string(pkt->m_data.int32[0])  + " " + std::to_string(pkt->m_data.int32[1]));
         break;
       case CPIT_float32:
         query += txn.quote(std::to_string(pkt->m_data.float32[0]).c_str());
@@ -274,7 +271,7 @@ namespace DogBotN {
 
     if(query.empty()) {
       query.reserve(4096);
-      query += "INSERT INTO dogbot1.emergency_stop (sourceid,logtime,cause) VALUES ";
+      query += "INSERT INTO emergency_stop (sourceid,logtime,cause) VALUES ";
     } else
       query += ",";
 
@@ -296,7 +293,7 @@ namespace DogBotN {
 
     if(query.empty()) {
       query.reserve(4096);
-      query += "INSERT INTO dogbot1.error (sourceid,logtime,name,cause,data) VALUES ";
+      query += "INSERT INTO error (sourceid,logtime,name,cause,data) VALUES ";
     } else
       query += ",";
 
@@ -323,7 +320,12 @@ namespace DogBotN {
     if(query.empty())
       return true;
     query += ';';
-    txn.exec(query,"Data logging");
+    try {
+      txn.exec(query,"Data logging");
+    } catch(pqxx::syntax_error &exErr) {
+      m_log->error("Caught exception '{}' executing: '{}' ",exErr.what(),query);
+      return false;
+    }
     return true;
   }
 
@@ -378,6 +380,12 @@ namespace DogBotN {
             if(LogError(txn,queries[packetType],a))
               msgCount++;
           } break;
+          case CPT_ReadParam: {
+            // Just drop these.
+          } break;
+          default:
+            m_log->warn("Message type {} not handled. ",(int) packetType);
+            break;
 #if 0
           CPT_SyncTime      =  2, // Sync time across controllers.
           CPT_SetParam      =  4, // Set parameter
@@ -429,13 +437,41 @@ namespace DogBotN {
 
     // Initialise array of servo names
     auto servoList = m_api->ListServos();
-    for(auto &a : servoList) {
-      if(!a)
-        continue;
-      assert(a->Id() < 256);
-      while(m_deviceNames.size() <= a->Id())
-        m_deviceNames.push_back(std::string());
-      m_deviceNames[a->Id()] = a->Name();
+
+    {
+      std::string query = "INSERT INTO source (sourceid,devicetype,serialnumber,notes) VALUES ";
+      pqxx::work txn(m_connection,"Insert Devices");
+
+      query.reserve(4096);
+      bool isFirst = true;
+      for(auto &a : servoList) {
+        if(!a)
+          continue;
+        assert(a->Id() < 256);
+        while(m_deviceNames.size() <= a->Id())
+          m_deviceNames.push_back(std::string());
+        m_deviceNames[a->Id()] = a->Name();
+        m_log->info("Found joint {} ",a->Name());
+        if(isFirst) {
+          isFirst =  false;
+        } else {
+          query += ',';
+        }
+        query += '(';
+        query += txn.quote(a->Name());
+        query += ',';
+        query += txn.quote(a->JointType());
+        query += ',';
+        query += txn.quote(a->SerialNumber());
+        query += ',';
+        query += txn.quote(a->Notes());
+        query += ')';
+      }
+      query += " ON CONFLICT DO NOTHING; ";
+
+      txn.exec(query,"Setup sources");
+
+      txn.commit();
     }
 
     m_writeThread = std::thread([this](){ WriteThread(); });

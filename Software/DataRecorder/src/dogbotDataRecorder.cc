@@ -83,6 +83,8 @@ int main(int argc,char **argv)
 
   DogBotN::PGDataRecorderC recorder(dogbotAPI,"dbname=dogbot user=reactai password=letmein");
 
+  sleep(1); // Leg initial coms take place.
+
   recorder.Start();
 
   while(!g_terminate) {

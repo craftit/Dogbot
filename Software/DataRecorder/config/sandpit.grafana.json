@@ -93,14 +93,14 @@
           "alias": "",
           "format": "time_series",
           "hide": false,
-          "rawSql": "SELECT\n  $__time(logtime),\n  value as \"command\"\nFROM\n  dogbot1.position_command\nWHERE\n  $__timeFilter(logtime) and sourceid='flknee'\n",
+          "rawSql": "SELECT\n  $__time(logtime),\n  value as \"command\"\nFROM\n  position_command\nWHERE\n  $__timeFilter(logtime) and sourceid='flknee'\n",
           "refId": "A"
         },
         {
           "alias": "",
           "format": "time_series",
           "hide": false,
-          "rawSql": "SELECT\n  $__time(logtime),\n  position, velocity, effort\nFROM\n  dogbot1.joint_state\nWHERE\n  $__timeFilter(logtime) and sourceid='flknee'\n",
+          "rawSql": "SELECT\n  $__time(logtime),\n  position, velocity, effort\nFROM\n  joint_state\nWHERE\n  $__timeFilter(logtime) and sourceid='flknee'\n",
           "refId": "B"
         }
       ],
