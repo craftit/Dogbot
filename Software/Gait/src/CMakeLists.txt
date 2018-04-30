@@ -17,7 +17,7 @@ add_definitions(-std=c++11)
 
 ADD_LIBRARY (DogBotGait STATIC
         SplineCatmullRom.cc
-        QuadrupedController.cc
+        SimpleQuadrupedController.cc
         SplineGaitController.cc
 )
 

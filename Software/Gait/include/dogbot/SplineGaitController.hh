@@ -1,7 +1,7 @@
 #ifndef DOGBOT_SPLINEGATECONTROLLER_HEADER
 #define DOGBOT_SPLINEGATECONTROLLER_HEADER 1
 
-#include "dogbot/QuadrupedController.hh"
+#include "dogbot/SimpleQuadrupedController.hh"
 #include "dogbot/SplineCatmullRom.hh"
 #include "dogbot/LegKinematics.hh"
 
@@ -38,13 +38,13 @@ namespace DogBotN {
   //! Gate generator base class.
 
   class SplineGaitControllerC
-    : public QuadrupedControllerC
+    : public SimpleQuadrupedControllerC
   {
   public:
     SplineGaitControllerC();
 
     //! Do a single timestep
-    virtual bool Step(float timeStep,QuadrupedPoseC &pose) override;
+    virtual bool Step(float timeStep,SimpleQuadrupedPoseC &pose) override;
 
     //! Plot graph of gait
     void PlotGait();

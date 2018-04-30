@@ -1,23 +1,23 @@
 
-#include "dogbot/QuadrupedController.hh"
 #include <cassert>
+#include "../include/dogbot/SimpleQuadrupedController.hh"
 
 namespace DogBotN {
 
   // Set the leg goal position
-  void QuadrupedPoseC::SetLegPosition(int legId,float hip,float leg,float knee)
+  void SimpleQuadrupedPoseC::SetLegPosition(int legId,float x,float y,float z)
   {
     int off = legId * 3;
     assert(off >= 0);
     assert(off < 12);
 
-    m_position[off+0] = hip;
-    m_position[off+1] = leg;
-    m_position[off+2] = knee;
+    m_position[off+0] = x;
+    m_position[off+1] = y;
+    m_position[off+2] = z;
   }
 
   // Set the leg goal position
-  void QuadrupedPoseC::GetLegPosition(int legId,float &x,float &y,float &z)
+  void SimpleQuadrupedPoseC::GetLegPosition(int legId,float &x,float &y,float &z)
   {
     int off = legId * 3;
     assert(off >= 0);
@@ -30,7 +30,7 @@ namespace DogBotN {
 
   //! Dump pose.
 
-  void QuadrupedPoseC::Dump(std::ostream &out)
+  void SimpleQuadrupedPoseC::Dump(std::ostream &out)
   {
     out << m_position[0];
     for(int i = 1;i < 12;i++)
@@ -39,15 +39,15 @@ namespace DogBotN {
 
   // ------------------------------------------------------
 
-  QuadrupedControllerC::QuadrupedControllerC()
+  SimpleQuadrupedControllerC::SimpleQuadrupedControllerC()
   {}
 
   //! Virtual destructor
-  QuadrupedControllerC::~QuadrupedControllerC()
+  SimpleQuadrupedControllerC::~SimpleQuadrupedControllerC()
   {}
 
   //! Do a single timestep
-  bool QuadrupedControllerC::Step(float timeStep,QuadrupedPoseC &positions)
+  bool SimpleQuadrupedControllerC::Step(float timeStep,SimpleQuadrupedPoseC &positions)
   {
     return true;
   }

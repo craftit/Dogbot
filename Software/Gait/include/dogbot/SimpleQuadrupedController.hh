@@ -6,16 +6,12 @@
 
 namespace DogBotN {
 
-  // Position vector.
-  //
-  //  0- Hip
-  //  1- Leg
-  //  2- Knee
+  // Cartesian positions for feet.
   //
   //  0-Front left  1-Front right
   //  2-Rear left   3-Read right
 
-  class QuadrupedPoseC
+  class SimpleQuadrupedPoseC
   {
   public:
     // Set the leg goal position
@@ -30,18 +26,18 @@ namespace DogBotN {
     float m_position[12];
   };
 
-  //! Gate generator base class.
+  //! Simple Gate generator base class.
 
-  class QuadrupedControllerC
+  class SimpleQuadrupedControllerC
   {
   public:
-    QuadrupedControllerC();
+    SimpleQuadrupedControllerC();
 
     //! Virtual destructor
-    virtual ~QuadrupedControllerC();
+    virtual ~SimpleQuadrupedControllerC();
 
     //! Do a single timestep
-    virtual bool Step(float timeStep,QuadrupedPoseC &pose);
+    virtual bool Step(float timeStep,SimpleQuadrupedPoseC &pose);
 
   protected:
 

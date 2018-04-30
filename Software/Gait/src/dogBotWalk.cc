@@ -93,11 +93,9 @@ int main(int argc,char **argv)
     legs[2] = std::make_shared<DogBotN::LegControllerC>(dogbot,"back_left");
     legs[3] = std::make_shared<DogBotN::LegControllerC>(dogbot,"back_right");
 
-
-
     while(1) {
 
-      DogBotN::QuadrupedPoseC pose;
+      DogBotN::SimpleQuadrupedPoseC pose;
       gaitController.Step(0.01,pose);
 
       for(int i = 0;i < 4;i++) {

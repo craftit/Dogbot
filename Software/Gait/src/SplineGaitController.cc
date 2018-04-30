@@ -134,7 +134,7 @@ namespace DogBotN {
   }
 
   //! Do a single timestep
-  bool SplineGaitControllerC::Step(float timeStep,QuadrupedPoseC &pose)
+  bool SplineGaitControllerC::Step(float timeStep,SimpleQuadrupedPoseC &pose)
   {
     m_phase += m_omega * timeStep;
     if(m_phase > M_PI*2)
