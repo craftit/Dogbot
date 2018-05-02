@@ -183,7 +183,6 @@ namespace DogBotN {
     query += ",";
     switch(DogBotN::ComsParameterIndexToType(paramIndex))
     {
-      default:
       case CPIT_Unknown:
       case CPIT_Invalid:
       case CPIT_Custom:
@@ -255,6 +254,9 @@ namespace DogBotN {
         break;
       case CPIT_float32:
         query += txn.quote(std::to_string(pkt->m_data.float32[0]).c_str());
+        break;
+      case CPIT_float32_2:
+        query += txn.quote(std::to_string(pkt->m_data.float32[0])  + " " + std::to_string(pkt->m_data.float32[1]));
         break;
     }
 
