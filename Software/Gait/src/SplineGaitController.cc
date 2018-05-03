@@ -34,18 +34,17 @@ namespace DogBotN {
     float Oad = -Sl / 9.0; // what fraction of distance to move the half the adjustment vertical distance
     float nXc = m_Xc - Sl/2.0;
 
-    pnts.push_back(SplinePoint3dC(m_tpr         ,nXc + m_Lpr          ,xoff ,zoff + m_Zc));        // 1
+    pnts.push_back(SplinePoint3dC(m_tpr         ,nXc + m_Lpr          ,xoff ,-(zoff + m_Zc)));        // 1
     if(m_Rpu > 0) {
       //float timePush = m_Lpr
-      pnts.push_back(SplinePoint3dC(2.0*m_tpu/3.0 ,nXc                ,xoff ,zoff + m_Zc));      // 2
-      pnts.push_back(SplinePoint3dC(m_tpu / 3.0   ,nXc - Lpu          ,xoff ,zoff + m_Zc-Zpu));  // 3
+      pnts.push_back(SplinePoint3dC(2.0*m_tpu/3.0 ,nXc                ,xoff ,-(zoff + m_Zc)));      // 2
+      pnts.push_back(SplinePoint3dC(m_tpu / 3.0   ,nXc - Lpu          ,xoff ,-(zoff + m_Zc-Zpu)));  // 3
     }
 
-    pnts.push_back(SplinePoint3dC(m_tad/4.0     ,nXc - LpuFin         ,xoff ,zoff + m_Zc));        // 4
-    pnts.push_back(SplinePoint3dC(m_tad/4.0     ,nXc - LpuFin + Oad   ,xoff ,zoff + m_Zc+m_Had/2.0));// 5
-    pnts.push_back(SplinePoint3dC(m_tad/4.0     ,nXc + m_Lpr - Sl/2.0 ,xoff ,zoff + m_Zc+m_Had));    // 6
-    pnts.push_back(SplinePoint3dC(m_tad/4.0     ,nXc + m_Lpr - Oad    ,xoff ,zoff + m_Zc+m_Had/2.0));// 7
-
+    pnts.push_back(SplinePoint3dC(m_tad/4.0     ,nXc - LpuFin         ,xoff ,-(zoff + m_Zc)));        // 4
+    pnts.push_back(SplinePoint3dC(m_tad/4.0     ,nXc - LpuFin + Oad   ,xoff ,-(zoff + m_Zc+m_Had/2.0)));// 5
+    pnts.push_back(SplinePoint3dC(m_tad/4.0     ,nXc + m_Lpr - Sl/2.0 ,xoff ,-(zoff + m_Zc+m_Had)));    // 6
+    pnts.push_back(SplinePoint3dC(m_tad/4.0     ,nXc + m_Lpr - Oad    ,xoff ,-(zoff + m_Zc+m_Had/2.0)));// 7
 
     for(auto &a : pnts) {
       Eigen::Vector3f op = a.m_point;
@@ -159,7 +158,7 @@ namespace DogBotN {
       Eigen::Vector3f pntx(
           pnt[1],
           pnt[0],
-          m_zOffset - pnt[2]
+          m_zOffset + pnt[2]
           );
 
 #if 0
