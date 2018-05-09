@@ -158,7 +158,7 @@ namespace DogBotN {
       Eigen::Vector3f pntx(
           pnt[1],
           pnt[0],
-          m_zOffset + pnt[2]
+          -m_zOffset - pnt[2]
           );
 
 #if 0
